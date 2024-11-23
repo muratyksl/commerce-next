@@ -2,14 +2,15 @@
 
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Comment, CreateCommentDto, Product } from "@/lib/types";
+import { CreateCommentDto, Product, ProductComment } from "@/lib/types";
 import RatingStars from "@/components/products/RatingStars";
 import { format } from "date-fns";
 import { useApi } from "@/hooks/useApi";
+import { calculateAverageRating } from "@/lib/utils/calculations";
 
 interface CommentsProps {
   productId: string;
-  comments: Comment[];
+  comments: ProductComment[];
 }
 
 export default function Comments({ productId, comments }: CommentsProps) {
@@ -25,10 +26,14 @@ export default function Comments({ productId, comments }: CommentsProps) {
         successMessage: "Comment added successfully",
       }),
     onSuccess: (newComment) => {
-      queryClient.setQueryData(["product", productId], (oldData: Product) => ({
-        ...oldData,
-        comments: [...(oldData.comments || []), newComment],
-      }));
+      queryClient.setQueryData(["product", productId], (oldData: Product) => {
+        const updatedComments = [...(oldData.comments || []), newComment];
+        return {
+          ...oldData,
+          comments: updatedComments,
+          rating: calculateAverageRating(updatedComments as ProductComment[]),
+        };
+      });
       setNewComment("");
       setRating(0);
     },

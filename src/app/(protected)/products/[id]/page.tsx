@@ -11,6 +11,7 @@ import ImageSlider from "@/components/products/ProductDetails/ImageSlider";
 import ProtectedLayout from "@/components/layout/ProtectedLayout";
 import Comments from "@/components/products/ProductDetails/Comments";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import { calculateAverageRating } from "@/lib/utils/calculations";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -53,6 +54,8 @@ export default function ProductDetailPage({ params }: PageProps) {
     return <div>Product not found</div>;
   }
 
+  const averageRating = calculateAverageRating(product.comments);
+
   return (
     <ProtectedLayout>
       <div className="bg-white rounded-lg shadow-sm p-6">
@@ -62,8 +65,8 @@ export default function ProductDetailPage({ params }: PageProps) {
           <div>
             <h1 className="text-2xl font-bold mb-4">{product.name}</h1>
             <div className="flex items-center gap-2 mb-4">
-              <RatingStars rating={product.rating} />
-              <span className="text-gray-600">({product.rating})</span>
+              <RatingStars rating={averageRating} />
+              <span className="text-gray-600">({averageRating})</span>
             </div>
             <p className="text-2xl font-bold mb-4">${product.price}</p>
             <p className="text-gray-600 mb-4">

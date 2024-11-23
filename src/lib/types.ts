@@ -1,3 +1,13 @@
+export interface ProductComment {
+  id: string;
+  productId: string;
+  userId: string;
+  username: string;
+  text: string;
+  rating: number;
+  createdAt: string;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -7,17 +17,7 @@ export interface Product {
   description: string;
   arrivalDate: string;
   images?: string[];
-  comments: Comment[];
-}
-
-export interface Comment {
-  id: string;
-  productId: string;
-  userId: string;
-  username: string;
-  text: string;
-  rating: number;
-  createdAt: string;
+  comments: ProductComment[];
 }
 
 export interface User {
