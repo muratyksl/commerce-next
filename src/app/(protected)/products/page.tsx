@@ -3,27 +3,25 @@
 import { useQuery } from "@tanstack/react-query";
 import ProductGrid from "@/components/products/ProductGrid";
 import ProtectedLayout from "@/components/layout/ProtectedLayout";
-
-// Temporary mock data
-const mockProducts = [
-  {
-    id: "1",
-    name: "Product 1",
-    price: 99.99,
-    rating: 4.5,
-    image: "https://picsum.photos/400/400",
-    description: "Product 1 description",
-    arrivalDate: "2024-03-20",
-    comments: [],
-  },
-  // Add more mock products as needed
-];
+import { useApi } from "@/hooks/useApi";
+import { Product } from "@/lib/types";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
 export default function ProductsPage() {
-  const { data: products } = useQuery({
+  const api = useApi();
+
+  const { data: products, isLoading } = useQuery({
     queryKey: ["products"],
-    queryFn: () => Promise.resolve(mockProducts),
+    queryFn: () => api.get<Product[]>("/products"),
   });
+
+  if (isLoading) {
+    return (
+      <ProtectedLayout>
+        <LoadingSpinner />
+      </ProtectedLayout>
+    );
+  }
 
   return (
     <ProtectedLayout>

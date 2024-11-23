@@ -12,7 +12,9 @@ export interface Product {
 
 export interface Comment {
   id: string;
+  productId: string;
   userId: string;
+  username: string;
   text: string;
   rating: number;
   createdAt: string;
@@ -21,4 +23,10 @@ export interface Comment {
 export interface User {
   username: string;
   token: string;
+}
+
+export interface CreateCommentDto {
+  text: string;
+  rating: number;
+  productId: string;
 }
