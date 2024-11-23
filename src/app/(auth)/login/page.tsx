@@ -21,8 +21,8 @@ export default function LoginPage() {
       await login(username, password);
       router.push("/products");
       router.refresh();
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      console.error(error);
       setError("Invalid credentials");
     } finally {
       setIsLoading(false);

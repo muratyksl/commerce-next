@@ -7,16 +7,11 @@ export async function POST(
 ) {
   try {
     const body: CreateCommentDto = await request.json();
-
-    // Here you would typically:
-    // 1. Validate the request body
-    // 2. Check user authentication
-    // 3. Save to database
-    // For now, we'll just return a mock response
+    const { id } = await params;
 
     const newComment = {
       id: Math.random().toString(),
-      productId: params.id,
+      productId: id,
       userId: "user-1",
       username: "User",
       text: body.text,
@@ -25,8 +20,8 @@ export async function POST(
     };
 
     return NextResponse.json(newComment, { status: 201 });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
-    console.error(error);
     return NextResponse.json(
       { error: "Failed to create comment" },
       { status: 500 }
