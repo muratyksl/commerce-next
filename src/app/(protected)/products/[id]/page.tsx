@@ -1,6 +1,6 @@
 "use client";
 
-import { use } from "react";
+import { useParams } from "next/navigation";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
@@ -13,10 +13,6 @@ import Comments from "@/components/products/ProductDetails/Comments";
 import { calculateAverageRating } from "@/lib/utils/calculations";
 import ProductDetailsSkeleton from "@/components/products/ProductDetails/ProductDetailsSkeleton";
 import Link from "next/link";
-
-interface PageProps {
-  params: Promise<{ id: string }>;
-}
 
 interface TabProps {
   isActive: boolean;
@@ -37,14 +33,14 @@ const Tab = ({ isActive, onClick, children }: TabProps) => (
   </button>
 );
 
-export default function ProductDetailPage({ params }: PageProps) {
+export default function ProductDetailPage() {
   const [activeTab, setActiveTab] = useState<"details" | "comments">("details");
+  const params = useParams<{ id: string }>();
   const api = useApi();
-  const resolvedParams = use(params) as { id: string };
 
   const { data: product, isLoading } = useQuery({
-    queryKey: ["product", resolvedParams.id],
-    queryFn: () => api.get<Product>(`/products/${resolvedParams.id}`),
+    queryKey: ["product", params.id],
+    queryFn: () => api.get<Product>(`/products/${params.id}`),
   });
 
   return (
