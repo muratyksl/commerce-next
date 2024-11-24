@@ -7,15 +7,22 @@ import RatingStars from "@/components/products/RatingStars";
 import { format } from "date-fns";
 import { useApi } from "@/hooks/useApi";
 import { calculateAverageRating } from "@/lib/utils/calculations";
+import CommentSkeleton from "./CommentSkeleton";
 
 interface CommentsProps {
   productId: string;
   comments: ProductComment[];
 }
 
+interface FormErrors {
+  rating?: string;
+  comment?: string;
+}
+
 export default function Comments({ productId, comments }: CommentsProps) {
   const [newComment, setNewComment] = useState("");
   const [rating, setRating] = useState(0);
+  const [errors, setErrors] = useState<FormErrors>({});
   const api = useApi();
   const queryClient = useQueryClient();
 
@@ -39,16 +46,31 @@ export default function Comments({ productId, comments }: CommentsProps) {
     },
   });
 
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {};
+    let isValid = true;
+
+    if (!rating) {
+      newErrors.rating = "Please select a rating";
+      isValid = false;
+    }
+
+    if (!newComment.trim()) {
+      newErrors.comment = "Please enter a comment";
+      isValid = false;
+    } else if (newComment.trim().length < 3) {
+      newErrors.comment = "Comment must be at least 3 characters long";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!rating) {
-      alert("Please select a rating");
-      return;
-    }
-    if (!newComment.trim()) {
-      alert("Please enter a comment");
-      return;
-    }
+    if (!validateForm()) return;
+
     addCommentMutation.mutate({
       text: newComment,
       rating,
@@ -69,6 +91,9 @@ export default function Comments({ productId, comments }: CommentsProps) {
             interactive
             onRatingChange={setRating}
           />
+          {errors.rating && (
+            <p className="mt-1 text-sm text-red-600">{errors.rating}</p>
+          )}
         </div>
         <div>
           <label
@@ -81,10 +106,19 @@ export default function Comments({ productId, comments }: CommentsProps) {
             id="comment"
             rows={4}
             value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            onChange={(e) => {
+              setNewComment(e.target.value);
+              if (errors.comment)
+                setErrors((prev) => ({ ...prev, comment: undefined }));
+            }}
+            className={`w-full px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 ${
+              errors.comment ? "border-red-300" : "border-gray-300"
+            }`}
             placeholder="Write your comment here..."
           />
+          {errors.comment && (
+            <p className="mt-1 text-sm text-red-600">{errors.comment}</p>
+          )}
         </div>
         <button
           type="submit"
@@ -96,6 +130,7 @@ export default function Comments({ productId, comments }: CommentsProps) {
       </form>
 
       <div className="space-y-4">
+        {addCommentMutation.isPending ? <CommentSkeleton /> : null}
         {comments.map((comment) => (
           <div key={comment.id} className="bg-gray-50 p-4 rounded-lg space-y-2">
             <div className="flex items-center justify-between">

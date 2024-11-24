@@ -10,8 +10,9 @@ import RatingStars from "@/components/products/RatingStars";
 import ImageSlider from "@/components/products/ProductDetails/ImageSlider";
 import ProtectedLayout from "@/components/layout/ProtectedLayout";
 import Comments from "@/components/products/ProductDetails/Comments";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { calculateAverageRating } from "@/lib/utils/calculations";
+import ProductDetailsSkeleton from "@/components/products/ProductDetails/ProductDetailsSkeleton";
+import Link from "next/link";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -46,59 +47,73 @@ export default function ProductDetailPage({ params }: PageProps) {
     queryFn: () => api.get<Product>(`/products/${resolvedParams.id}`),
   });
 
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
-
-  if (!product) {
-    return <div>Product not found</div>;
-  }
-
-  const averageRating = calculateAverageRating(product.comments);
-
   return (
     <ProtectedLayout>
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <ImageSlider images={product.images || [product.image]} />
+      {isLoading ? (
+        <ProductDetailsSkeleton />
+      ) : product ? (
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <ImageSlider images={product.images || [product.image]} />
 
-          <div>
-            <h1 className="text-2xl font-bold mb-4">{product.name}</h1>
-            <div className="flex items-center gap-2 mb-4">
-              <RatingStars rating={averageRating} />
-              <span className="text-gray-600">({averageRating})</span>
+            <div>
+              <h1 className="text-2xl font-bold mb-4">{product.name}</h1>
+              <div className="flex items-center gap-2 mb-4">
+                <RatingStars
+                  rating={calculateAverageRating(product.comments)}
+                />
+                <span className="text-gray-600">
+                  ({product.comments.length})
+                </span>
+              </div>
+              <p className="text-2xl font-bold mb-4">${product.price}</p>
+              <p className="text-gray-600 mb-4">
+                Arrival Date:{" "}
+                {format(new Date(product.arrivalDate), "MM.dd.yyyy")}
+              </p>
             </div>
-            <p className="text-2xl font-bold mb-4">${product.price}</p>
-            <p className="text-gray-600 mb-4">
-              Arrival Date:{" "}
-              {format(new Date(product.arrivalDate), "MM.dd.yyyy")}
-            </p>
+          </div>
+
+          <div className="mt-8 border-b">
+            <Tab
+              isActive={activeTab === "details"}
+              onClick={() => setActiveTab("details")}
+            >
+              Details
+            </Tab>
+            <Tab
+              isActive={activeTab === "comments"}
+              onClick={() => setActiveTab("comments")}
+            >
+              Comments ({product.comments.length})
+            </Tab>
+          </div>
+
+          <div className="mt-4">
+            {activeTab === "details" ? (
+              <p className="text-gray-700">{product.description}</p>
+            ) : (
+              <Comments productId={product.id} comments={product.comments} />
+            )}
           </div>
         </div>
-
-        <div className="mt-8 border-b">
-          <Tab
-            isActive={activeTab === "details"}
-            onClick={() => setActiveTab("details")}
+      ) : (
+        <div className="text-center py-12">
+          <h2 className="text-2xl font-bold text-gray-900">
+            Product not found
+          </h2>
+          <p className="mt-2 text-gray-600">
+            The product you&apos;re looking for doesn&apos;t exist or has been
+            removed.
+          </p>
+          <Link
+            href="/products"
+            className="mt-4 inline-block px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
           >
-            Details
-          </Tab>
-          <Tab
-            isActive={activeTab === "comments"}
-            onClick={() => setActiveTab("comments")}
-          >
-            Comments ({product.comments.length})
-          </Tab>
+            Back to Products
+          </Link>
         </div>
-
-        <div className="mt-4">
-          {activeTab === "details" ? (
-            <p className="text-gray-700">{product.description}</p>
-          ) : (
-            <Comments productId={product.id} comments={product.comments} />
-          )}
-        </div>
-      </div>
+      )}
     </ProtectedLayout>
   );
 }
