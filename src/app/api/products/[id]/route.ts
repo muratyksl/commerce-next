@@ -3,10 +3,10 @@ import { mockProducts } from "@/lib/mocks/products";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
-    const { id } = await params;
+    const { id } = context.params;
     const product = mockProducts.find((p) => p.id === id);
 
     if (!product) {

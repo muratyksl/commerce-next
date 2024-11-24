@@ -3,11 +3,11 @@ import { CreateCommentDto } from "@/lib/types";
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
     const body: CreateCommentDto = await request.json();
-    const { id } = await params;
+    const { id } = context.params;
 
     const newComment = {
       id: Math.random().toString(),
