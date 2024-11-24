@@ -102,19 +102,7 @@ yarn install --legacy-peer-deps
 pnpm install --legacy-peer-deps
 ```
 
-3. Environment setup:
-
-```bash
-# Copy the example env file
-cp .env.example .env.local
-
-# Add your environment variables
-# Required variables:
-# - API_URL=your_api_url
-# - JWT_SECRET=your_jwt_secret
-```
-
-4. Start development server:
+3. Start development server:
 
 ```bash
 npm run dev
