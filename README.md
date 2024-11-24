@@ -88,7 +88,7 @@ This application implements core e-commerce functionalities with a focus on:
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/commerce-next.git
+git clone https://github.com/muratyksl/commerce-next.git
 cd commerce-next
 ```
 
