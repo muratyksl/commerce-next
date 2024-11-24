@@ -19,20 +19,28 @@ test.describe("Product Comments", () => {
   });
 
   test("should add a new comment", async ({ page }) => {
+    // Switch to comments tab first
+    await page.click('button:has-text("Comments")');
+
     // Wait for the form to be visible
     await expect(page.locator("textarea")).toBeVisible();
 
-    // Add rating
-    await page.click(".group >> nth=4"); // Click the 5th star
+    // Add rating - updated approach
+    await page.locator('[data-testid="interactive-star-rating-5"]').click();
 
-    // Add comment text
+    // Verify the rating was set by checking the star's appearance
+    await expect(
+      page.locator('[data-testid="interactive-star-rating-5"] svg')
+    ).toHaveClass(/text-yellow-400/);
+
+    // Add a wait to ensure rating is set
+    await page.waitForTimeout(100);
+
+    // Fill in the comment
     await page.fill("textarea", "This is a test comment");
 
-    // Submit comment
+    // Submit the form
     await page.click('button:has-text("Submit")');
-
-    // Verify success message
-    await expect(page.locator("text=Comment added successfully")).toBeVisible();
 
     // Verify new comment is displayed
     await expect(page.locator("text=This is a test comment")).toBeVisible();

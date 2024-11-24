@@ -28,6 +28,9 @@ export default function RatingStars({
           type={interactive ? "button" : undefined}
           onClick={() => interactive && onRatingChange?.(star)}
           className={`${interactive ? "cursor-pointer" : "cursor-default"}`}
+          data-testid={`${
+            interactive ? "interactive" : "display"
+          }-star-rating-${star}`}
         >
           <FiStar
             className={`
