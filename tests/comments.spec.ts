@@ -12,7 +12,7 @@ test.describe("Product Comments", () => {
     await expect(page).toHaveURL("/products");
 
     // Navigate to first product
-    await page.click("text=Product 1");
+    await page.click('a[href="/products/1"]');
 
     // Wait for product details page to load
     await expect(page).toHaveURL(/\/products\/1/);
