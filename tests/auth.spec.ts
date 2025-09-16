@@ -29,4 +29,25 @@ test.describe("Authentication", () => {
     // Verify error message
     await expect(page.locator("text=Invalid credentials")).toBeVisible();
   });
+
+  test("should logout successfully", async ({ page }) => {
+    await page.goto("/login");
+
+    // Fill login form
+    await page.fill('input[placeholder*="Username"]', "user");
+    await page.fill('input[placeholder*="Password"]', "user123");
+    await page.click('button:has-text("Sign in")');
+
+    // Verify redirect to products page
+    await expect(page).toHaveURL("/products");
+
+    // Click logout button
+    await page.click('[data-testid="logout-button"]');
+
+    // Verify redirect to login page
+    await expect(page).toHaveURL("/login");
+
+    // Verify user is logged out
+    await expect(page.locator('button:has-text("Sign in")')).toBeVisible();
+  });
 });
