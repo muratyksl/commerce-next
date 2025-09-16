@@ -23,6 +23,7 @@ export default function Header() {
               <button
                 onClick={logout}
                 className="flex items-center text-gray-600 hover:text-gray-900"
+                data-testid="logout-button"
               >
                 <FiLogOut className="h-5 w-5" />
               </button>
